@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { useDispatch } from "react-redux";
-
+import { AuthError, AuthErrorCodes } from "firebase/auth";
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPES_CLASSES } from "../button/button.component";
 
@@ -27,17 +27,17 @@ const SignInForm = () => {
     dispatch(googleSignInStart());
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       dispatch(emailSignInStart(email, password));
       resetFormFields();
     } catch (error) {
-      switch (error.code) {
-        case "auth/wrong-password":
+      switch ((error as AuthError).code) {
+        case AuthErrorCodes.INVALID_PASSWORD:
           alert("incorrect password for email");
           break;
-        case "auth/user-not-found":
+        case AuthErrorCodes.USER_DELETED:
           alert("user not found");
           break;
         default:
@@ -46,7 +46,7 @@ const SignInForm = () => {
       }
     }
   };
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLFormElement>) => {
     const { name, value } = event.target;
 
     setFormFields({ ...formFields, [name]: value });
@@ -55,12 +55,12 @@ const SignInForm = () => {
     <SignInContainer>
       <H2>Already have an account?</H2>
       <span>Sign in with your email and password</span>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={() => handleSubmit}>
         <FormInput
           label="Email"
           type="email"
           required
-          onChange={handleChange}
+          onChange={() => handleChange}
           name="email"
           value={email}
         />
@@ -69,7 +69,7 @@ const SignInForm = () => {
           label="Password"
           type="password"
           required
-          onChange={handleChange}
+          onChange={() => handleChange}
           name="password"
           value={password}
         />

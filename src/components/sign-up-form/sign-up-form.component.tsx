@@ -7,7 +7,7 @@ import Button from "../button/button.component";
 
 import { signUpStart } from "../../store/user/user.action";
 
-import { SignUpContainer, H2 } from "./sign-up-form.styles.jsx";
+import { SignUpContainer, H2 } from "./sign-up-form.styles";
 
 const defaultFormFields = {
   displayName: "",
